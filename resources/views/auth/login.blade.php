@@ -63,13 +63,13 @@
                                class="rounded border-gray-500 bg-gray-900/50 text-[#00ADB5] shadow-sm focus:ring-[#00ADB5]">
                         <span class="mr-2 text-sm text-gray-300">تذكرني</span>
                     </label>
-
+<!-- 
                     @if (Route::has('password.request'))
                         <a href="{{ route('password.request') }}"
                            class="text-sm text-[#00ADB5] hover:text-[#02C39A] hover:underline transition">
                             نسيت كلمة المرور؟
                         </a>
-                    @endif
+                    @endif -->
                 </div>
 
                 <div class="pt-4">
