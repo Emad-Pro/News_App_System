@@ -19,32 +19,35 @@
     </style>
 </head>
 
-<body class="font-sans antialiased bg-gradient-to-br from-[#283E51] to-[#485563]">
-    <div class="relative min-h-screen md:flex">
-        
+<body class="font-sans antialiased bg-gradient-to-br from-[#283E51] to-[#485563] min-h-screen">
+    <div class="flex flex-col md:flex-row min-h-screen w-full overflow-hidden">
+
         {{-- القائمة الجانبية (Sidebar) --}}
         @include('layouts.sidebar')
 
-        <div class="flex-1 flex flex-col min-w-0"> {{-- إضافة min-w-0 مهمة للتجاوب --}}
-            
-            {{-- شريط التنقل العلوي (Navigation) --}}
+        {{-- المحتوى الرئيسي --}}
+        <div class="flex-1 flex flex-col w-full overflow-x-hidden">
+
+            {{-- شريط التنقل العلوي --}}
             @include('layouts.navigation')
 
-            {{-- رأس الصفحة (Header) --}}
+            {{-- رأس الصفحة --}}
             @if (isset($header))
-                <header class="px-4 sm:px-6 lg:px-8 mt-6">
-                    <div class="bg-white/10 backdrop-blur-lg rounded-2xl shadow-lg border border-white/20 px-6 py-4">
+                <header class="px-4 sm:px-6 lg:px-8 mt-4">
+                    <div class="bg-white/10 backdrop-blur-lg rounded-2xl shadow-lg border border-white/20 px-4 py-3">
                         {{ $header }}
                     </div>
                 </header>
             @endif
 
-            {{-- المحتوى الرئيسي للصفحة --}}
-            <main class="flex-1">
+            {{-- المحتوى --}}
+            <main class="flex-1 px-4 sm:px-6 lg:px-8 py-6">
                 {{ $slot }}
             </main>
+
         </div>
     </div>
+
 
     {{-- CDN Scripts --}}
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
