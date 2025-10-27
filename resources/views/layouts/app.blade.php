@@ -2,7 +2,7 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" dir="rtl">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <title>{{ config('app.name', 'Laravel') }}</title>
@@ -19,21 +19,19 @@
     </style>
 </head>
 
-{{-- تم تعديل الخلفية هنا لتطبيق الثيم المظلم --}}
 <body class="font-sans antialiased bg-gradient-to-br from-[#283E51] to-[#485563]">
     <div class="relative min-h-screen md:flex">
         
         {{-- القائمة الجانبية (Sidebar) --}}
         @include('layouts.sidebar')
 
-        <div class="flex-1 flex flex-col">
+        <div class="flex-1 flex flex-col min-w-0"> {{-- إضافة min-w-0 مهمة للتجاوب --}}
             
             {{-- شريط التنقل العلوي (Navigation) --}}
             @include('layouts.navigation')
 
             {{-- رأس الصفحة (Header) --}}
             @if (isset($header))
-                {{-- تم تعديل تصميم الهيدر ليصبح زجاجيًا --}}
                 <header class="px-4 sm:px-6 lg:px-8 mt-6">
                     <div class="bg-white/10 backdrop-blur-lg rounded-2xl shadow-lg border border-white/20 px-6 py-4">
                         {{ $header }}
@@ -76,7 +74,6 @@
             }
         }
 
-        // تم تعديل تصميم عنصر الإشعار هنا
         function createNotificationElement(notification) {
             const link = `/admin/articles/${notification.data.article_slug}#comment-${notification.data.comment_id}`;
             return `
@@ -111,33 +108,34 @@
             }
         }
 
-        window.Echo.private('App.Models.User.' + userId)
-            .notification((notification) => {
-                unreadCount++;
-                updateBadgeVisibility();
+        if (window.Echo) {
+            window.Echo.private('App.Models.User.' + userId)
+                .notification((notification) => {
+                    unreadCount++;
+                    updateBadgeVisibility();
 
-                // تم تعديل تصميم الإشعار المنبثق (Toast) هنا
-                Toastify({
-                    text: `🔔 تعليق جديد من ${notification.user_name}`,
-                    duration: 6000,
-                    destination: `/admin/articles/${notification.article_slug}#comment-${notification.comment_id}`,
-                    newWindow: false,
-                    close: true,
-                    gravity: "top",
-                    position: "left", // 'left' in LTR, so it appears on the right in RTL
-                    style: {
-                        background: "linear-gradient(to right, #00ADB5, #02C39A)",
-                        "border-radius": "10px",
-                    },
-                    stopOnFocus: true
-                }).showToast();
+                    Toastify({
+                        text: `🔔 تعليق جديد من ${notification.user_name}`,
+                        duration: 6000,
+                        destination: `/admin/articles/${notification.article_slug}#comment-${notification.comment_id}`,
+                        newWindow: false,
+                        close: true,
+                        gravity: "top",
+                        position: "left",
+                        style: {
+                            background: "linear-gradient(to right, #00ADB5, #02C39A)",
+                            "border-radius": "10px",
+                        },
+                        stopOnFocus: true
+                    }).showToast();
 
-                const newNotificationHtml = createNotificationElement({ data: notification });
-                if (notificationList.querySelector('p')) {
-                    notificationList.innerHTML = '';
-                }
-                notificationList.insertAdjacentHTML('afterbegin', newNotificationHtml);
-            });
+                    const newNotificationHtml = createNotificationElement({ data: notification });
+                    if (notificationList.querySelector('p')) {
+                        notificationList.innerHTML = '';
+                    }
+                    notificationList.insertAdjacentHTML('afterbegin', newNotificationHtml);
+                });
+        }
 
         notificationBell.addEventListener('click', function(event) {
             event.stopPropagation();
@@ -172,7 +170,7 @@
 @endif
 @endauth
 
-{{-- سكربت القائمة الجانبية (لا يحتاج لتعديل) --}}
+{{-- سكربت القائمة الجانبية --}}
 @push('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function () {
@@ -181,16 +179,16 @@
         const closeBtn = document.getElementById('close-sidebar-btn');
         const backdrop = document.getElementById('sidebar-backdrop');
         const openSidebar = () => {
-            sidebar.classList.remove('translate-x-full');
-            backdrop.classList.remove('hidden');
+            if(sidebar) sidebar.classList.remove('translate-x-full');
+            if(backdrop) backdrop.classList.remove('hidden');
         };
         const closeSidebar = () => {
-            sidebar.classList.add('translate-x-full');
-            backdrop.classList.add('hidden');
+            if(sidebar) sidebar.classList.add('translate-x-full');
+            if(backdrop) backdrop.classList.add('hidden');
         };
-        openBtn.addEventListener('click', openSidebar);
-        closeBtn.addEventListener('click', closeSidebar);
-        backdrop.addEventListener('click', closeSidebar);
+        if(openBtn) openBtn.addEventListener('click', openSidebar);
+        if(closeBtn) closeBtn.addEventListener('click', closeSidebar);
+        if(backdrop) backdrop.addEventListener('click', closeSidebar);
     });
 </script>
 @endpush
