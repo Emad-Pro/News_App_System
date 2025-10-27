@@ -3,93 +3,255 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>مرحبا بك</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+    <title>مرحباً بك في نظام الإدارة</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <style>
-        body {
+        html, body {
+            height: 100%;
             margin: 0;
-            padding: 0;
+        }
+        body {
             font-family: 'Cairo', sans-serif;
             background: linear-gradient(135deg, #283E51, #485563);
-            color: #fff;
+            color: #f0f0f0;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            min-height: 100vh;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        main {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
             text-align: center;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         h1 {
-            font-size: 2.2rem;
-            margin-bottom: 10px;
-            color: #f5f5f5;
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            color: #fff;
+            font-weight: 700;
         }
 
         p {
             font-size: 1.1rem;
             margin: 8px 0;
+            line-height: 1.6;
         }
 
-        .button-container {
+        /* --- قسم آخر التحديثات --- */
+        .updates-section {
             margin-top: 30px;
+            text-align: right;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            padding-top: 20px;
         }
-
+        .updates-section h2 {
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            color: #00ADB5;
+        }
+        .updates-section ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .updates-section li {
+            padding: 5px 0;
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+        .updates-section i {
+            margin-left: 10px;
+        }
+        
+        /* --- الأزرار --- */
+        .button-container {
+            margin-top: 40px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+        }
         a.button {
-            display: inline-block;
-            padding: 14px 30px;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 28px;
+            border-radius: 50px;
+            font-weight: 600;
+            text-decoration: none;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+        }
+        .button.primary {
             background-color: #00ADB5;
             color: #fff;
-            border-radius: 50px;
-            font-weight: bold;
-            text-decoration: none;
-            font-size: 1.1rem;
-            transition: all 0.3s ease;
         }
-
-        a.button:hover {
-            background-color: #02C39A;
+        .button.secondary {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: #fff;
+        }
+        .button:hover {
             transform: translateY(-3px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.25);
         }
 
         footer {
-            position: absolute;
-            bottom: 20px;
             width: 100%;
             text-align: center;
+            padding: 20px 0;
             font-size: 0.9rem;
-            color: #ddd;
+            color: #bbb;
+        }
+
+        /* --- نافذة الفيديو المنبثقة (Modal) --- */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.85);
+            backdrop-filter: blur(5px);
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-content {
+            position: relative;
+            width: 90%;
+            max-width: 800px;
+        }
+        .video-wrapper {
+            position: relative;
+            padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+            height: 0;
+        }
+        .video-wrapper iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 10px;
+        }
+        .close-button {
+            position: absolute;
+            top: -40px;
+            right: 0px;
+            color: #fff;
+            font-size: 35px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        .close-button:hover {
+            color: #00ADB5;
         }
 
         @media (max-width: 768px) {
-            h1 {
-                font-size: 1.8rem;
-            }
-            p {
-                font-size: 1rem;
-            }
-            a.button {
-                font-size: 1rem;
-                padding: 12px 24px;
-            }
+            .card { padding: 30px; }
+            h1 { font-size: 2rem; }
+            .updates-section h2 { font-size: 1.2rem; }
+            .button-container { flex-direction: column; align-items: center; }
         }
     </style>
 </head>
 <body>
-    <div class="content">
-        <h1>مرحباً بك في نظام الإدارة</h1>
-        <p>تم برمجة قاعدة البيانات بواسطة <strong>Eng. Emad Younis</strong></p>
-        <p>وتم تطوير واجهة التطبيق بواسطة <strong>Eng. Radwa</strong></p>
 
-        <div class="button-container">
-            <a href="{{ route('admin.dashboard') }}" class="button">هل تريد الذهاب إلى لوحة التحكم؟</a>
+    <main>
+        <div class="card">
+            <h1>مرحباً بك في نظام الإدارة</h1>
+            <p>هذه هي البوابة الرئيسية لمشروعك، من هنا يمكنك الانتقال إلى لوحة التحكم أو مشاهدة شرح توضيحي للنظام.</p>
+            
+            <div class="updates-section">
+                <h2><i class="fas fa-rocket"></i>آخر التحديثات والتحسينات</h2>
+                <ul>
+                    <li><i class="fas fa-check-circle"></i>تحسين سرعة استجابة الـ API.</li>
+                    <li><i class="fas fa-palette"></i>تجديد تصميم واجهة التقارير.</li>
+                    <li><i class="fas fa-shield-alt"></i>إضافة طبقة أمان جديدة للمصادقة.</li>
+                </ul>
+            </div>
 
+            <div class="button-container">
+                <a href="{{ route('admin.dashboard') }}" class="button primary">
+                    <i class="fas fa-tachometer-alt"></i>
+                    الذهاب للوحة التحكم
+                </a>
+                <a href="#" id="openVideoBtn" class="button secondary">
+                    <i class="fas fa-play-circle"></i>
+                    مشاهدة فيديو توضيحي
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        &copy; {{ date('Y') }} جميع الحقوق محفوظة | تطوير Eng. Emad Younis و Eng. Radwa
+    </footer>
+
+    <div id="videoModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <div class="video-wrapper">
+                <iframe id="demoVideo" width="560" height="315" src="https://www.youtube.com/embed/dQw4w9WgXcQ" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            </div>
         </div>
     </div>
 
-    <footer>
-        &copy; {{ date('Y') }} جميع الحقوق محفوظة
-    </footer>
+    <script>
+        // جلب العناصر
+        const modal = document.getElementById('videoModal');
+        const openBtn = document.getElementById('openVideoBtn');
+        const closeBtn = document.querySelector('.close-button');
+        const videoFrame = document.getElementById('demoVideo');
+        const videoSrc = videoFrame.src; // حفظ رابط الفيديو الأصلي
+
+        // عند الضغط على زر "مشاهدة فيديو"
+        openBtn.onclick = function(e) {
+            e.preventDefault(); // منع سلوك الرابط الافتراضي
+            modal.style.display = 'flex';
+            videoFrame.src = videoSrc; // إعادة تعيين الرابط لضمان التشغيل
+        }
+
+        // دالة إغلاق النافذة
+        function closeModal() {
+            modal.style.display = 'none';
+            videoFrame.src = ''; // إيقاف الفيديو عند الإغلاق لمنع تشغيله في الخلفية
+        }
+
+        // عند الضغط على زر الإغلاق (X)
+        closeBtn.onclick = closeModal;
+
+        // عند الضغط على أي مكان خارج الفيديو
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                closeModal();
+            }
+        }
+    </script>
+
 </body>
 </html>

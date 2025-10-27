@@ -1,35 +1,42 @@
-<aside id="sidebar" class="fixed inset-y-0 right-0 z-30 w-64 bg-white dark:bg-gray-900 border-l border-gray-200 dark:border-gray-700 p-5 transform transition-transform duration-300 ease-in-out translate-x-full md:translate-x-0 md:relative md:inset-auto md:transform-none">
+<aside id="sidebar" class="fixed inset-y-0 right-0 z-30 w-64 bg-black/30 backdrop-blur-lg border-l border-white/20 p-5 transform transition-transform duration-300 ease-in-out translate-x-full md:translate-x-0 md:relative md:inset-auto md:transform-none">
     <div class="flex items-center justify-between mb-10">
-        <div class="flex items-center">
-            <img src="https://img.icons8.com/?size=100&id=59843&format=png&color=4A6A5A" class="w-10 ml-2" alt="Logo">
-            <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-100">لوحة التحكم</h2>
-        </div>
-        <button id="close-sidebar-btn" class="md:hidden text-gray-600 dark:text-gray-300">
-            <x-heroicon-o-x-mark class="w-6 h-6" />
+        <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-3">
+            <img src="https://img.icons8.com/?size=100&id=59843&format=png&color=00ADB5" class="w-10" alt="Logo">
+            <h2 class="text-xl font-bold text-white">لوحة التحكم</h2>
+        </a>
+        <button id="close-sidebar-btn" class="md:hidden text-gray-300 hover:text-white">
+            <i class="fas fa-times text-xl"></i>
         </button>
     </div>
 
     <nav class="space-y-2">
-        <a href="{{ route('admin.dashboard') }}" class="flex items-center px-3 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md">
-            <x-heroicon-o-home class="w-5 h-5 ml-2 text-gray-500" />
+        {{-- دالة is_active لتحديد الرابط النشط --}}
+        @php
+            function is_active($routeName) {
+                return request()->routeIs($routeName) 
+                    ? 'bg-[#00ADB5] text-white shadow-lg' 
+                    : 'text-gray-300 hover:bg-white/10 hover:text-white';
+            }
+        @endphp
+
+        <a href="{{ route('admin.dashboard') }}" class="flex items-center px-3 py-2.5 rounded-lg transition-colors duration-200 {{ is_active('admin.dashboard') }}">
+            <i class="fas fa-home w-5 text-center mr-3"></i>
             <span>الرئيسية</span>
         </a>
-        <a href="{{ route('admin.articles.index') }}" class="flex items-center px-3 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md">
-            <x-heroicon-o-document-text class="w-5 h-5 ml-2 text-gray-500" />
+        <a href="{{ route('admin.articles.index') }}" class="flex items-center px-3 py-2.5 rounded-lg transition-colors duration-200 {{ is_active('admin.articles.*') }}">
+            <i class="fas fa-newspaper w-5 text-center mr-3"></i>
             <span>المقالات</span>
         </a>
-        <a href="{{ route('admin.categories.index') }}" class="flex items-center px-3 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md">
-            <x-heroicon-o-tag class="w-5 h-5 ml-2 text-gray-500" />
+        <a href="{{ route('admin.categories.index') }}" class="flex items-center px-3 py-2.5 rounded-lg transition-colors duration-200 {{ is_active('admin.categories.*') }}">
+            <i class="fas fa-tags w-5 text-center mr-3"></i>
             <span>إدارة الفئات</span>
         </a>
-        <a href="{{ route('admin.users.index') }}" class="flex items-center px-3 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md">
-            <x-heroicon-o-users class="w-5 h-5 ml-2 text-gray-500" />
+        <a href="{{ route('admin.users.index') }}" class="flex items-center px-3 py-2.5 rounded-lg transition-colors duration-200 {{ is_active('admin.users.*') }}">
+            <i class="fas fa-users w-5 text-center mr-3"></i>
             <span>المستخدمين</span>
         </a>
     </nav>
 </aside>
-
-<div id="sidebar-backdrop" class="fixed inset-0 bg-black bg-opacity-50 z-20 hidden md:hidden"></div>
 
 @push('scripts')
 <script>

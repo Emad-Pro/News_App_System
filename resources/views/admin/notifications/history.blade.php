@@ -1,29 +1,41 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-100 leading-tight">
+        <h2 class="font-semibold text-xl text-white leading-tight">
             سجل الإشعارات
         </h2>
     </x-slot>
 
     <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+        <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
+            <div class="bg-white/10 backdrop-blur-lg rounded-2xl shadow-lg border border-white/20 overflow-hidden">
+                <div class="p-6 text-white">
                     <div class="space-y-4">
                         @forelse ($notifications as $notification)
-                            {{-- الرابط الآن يحتوي على slug المقال ومعرف التعليق --}}
-                            <a href="{{ route('admin.articles.show', $notification->data['article_slug']) }}@if(isset($notification->data['comment_id']))#comment-{{ $notification->data['comment_id'] }}@endif"
-   class="block p-4 rounded-lg transition {{ $notification->read_at ? 'bg-gray-50 dark:bg-gray-700/50' : 'bg-indigo-50 dark:bg-indigo-900/50' }}">
-
+                            {{-- تم تحسين تصميم كل إشعار --}}
+                            <a href="{{ route('admin.articles.show', $notification->data['article_slug']) }}#comment-{{ $notification->data['comment_id'] }}"
+                               class="block p-4 rounded-lg transition duration-300 hover:bg-white/10 {{ $notification->read_at ? 'opacity-70' : 'border-r-4 border-[#00ADB5]' }}">
                                 
-                                <p class="font-semibold text-gray-800 dark:text-gray-200">
-                                    <span class="font-bold">{{ $notification->data['user_name'] }}</span>
-                                    علّق على مقال: "{{ $notification->data['article_title'] }}"
-                                </p>
-                                <span class="text-xs text-gray-500">{{ $notification->created_at->diffForHumans() }}</span>
+                                <div class="flex items-start gap-4">
+                                    <div class="text-xl text-gray-400 pt-1">
+                                        <i class="fas fa-comment-dots"></i>
+                                    </div>
+                                    <div class="flex-1">
+                                        <p class="font-semibold text-white">
+                                            <span class="font-bold">{{ $notification->data['user_name'] }}</span>
+                                            علّق على مقال: "{{ $notification->data['article_title'] }}"
+                                        </p>
+                                        <span class="text-xs text-gray-400">{{ $notification->created_at->diffForHumans() }}</span>
+                                    </div>
+                                    @if(!$notification->read_at)
+                                        <span class="text-xs font-bold text-[#00ADB5]">جديد</span>
+                                    @endif
+                                </div>
                             </a>
                         @empty
-                            <p class="text-center text-gray-500 py-8">لا يوجد إشعارات لعرضها.</p>
+                            <div class="text-center text-gray-400 py-12">
+                                <i class="fas fa-bell-slash fa-3x mb-3"></i>
+                                <p>لا يوجد إشعارات لعرضها.</p>
+                            </div>
                         @endforelse
                     </div>
 

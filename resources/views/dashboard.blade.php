@@ -1,65 +1,71 @@
 <x-app-layout>
+    {{-- 
+        ملاحظة: تأكد من أن ملف app.blade.php يحتوي على 
+        رابط Font Awesome لتظهر الأيقونات بشكل صحيح.
+    --}}
+    
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-100 leading-tight">
-            {{ __('لوحة التحكم الرئيسية') }}
-        </h2>
+        <div class="bg-white/10 backdrop-blur-lg rounded-2xl shadow-lg border border-white/20 px-6 py-4">
+            <h2 class="font-semibold text-xl text-white leading-tight">
+                {{ __('لوحة التحكم الرئيسية') }}
+            </h2>
+        </div>
     </x-slot>
 
     <div class="py-10 px-4 sm:px-6 lg:px-8">
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
 
-            <!-- بطاقة: المستخدمين -->
-            <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-5 flex items-center justify-between hover:shadow-md transition">
+            <div class="bg-white/10 backdrop-blur-lg rounded-2xl shadow-lg border border-white/20 p-5 flex items-center justify-between transition duration-300 transform hover:-translate-y-1">
                 <div>
-                    <h3 class="text-sm text-gray-500 dark:text-gray-400">عدد المستخدمين</h3>
-                    <p class="text-3xl font-semibold text-gray-800 dark:text-gray-100 mt-1">{{ $userCount }}</p>
+                    <h3 class="text-sm font-medium text-gray-300">عدد المستخدمين</h3>
+                    <p class="text-3xl font-bold text-white mt-1">{{ $userCount }}</p>
                 </div>
-                <div class="bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-300 p-3 rounded-lg">
-                    <x-heroicon-o-users class="w-6 h-6" />
+                <div class="bg-[#00ADB5]/20 text-[#00ADB5] p-3 rounded-full">
+                    <i class="fas fa-users fa-lg"></i>
                 </div>
             </div>
 
-            <!-- بطاقة: المقالات -->
-            <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-5 flex items-center justify-between hover:shadow-md transition">
+            <div class="bg-white/10 backdrop-blur-lg rounded-2xl shadow-lg border border-white/20 p-5 flex items-center justify-between transition duration-300 transform hover:-translate-y-1">
                 <div>
-                    <h3 class="text-sm text-gray-500 dark:text-gray-400">عدد المقالات</h3>
-                    <p class="text-3xl font-semibold text-gray-800 dark:text-gray-100 mt-1">{{ $articleCount }}</p>
+                    <h3 class="text-sm font-medium text-gray-300">عدد المقالات</h3>
+                    <p class="text-3xl font-bold text-white mt-1">{{ $articleCount }}</p>
                 </div>
-                <div class="bg-green-100 dark:bg-green-900 text-green-600 dark:text-green-300 p-3 rounded-lg">
-                    <x-heroicon-o-document-text class="w-6 h-6" />
+                <div class="bg-[#00ADB5]/20 text-[#00ADB5] p-3 rounded-full">
+                     <i class="fas fa-newspaper fa-lg"></i>
                 </div>
             </div>
 
-            <!-- بطاقة: التعليقات -->
-            <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-5 flex items-center justify-between hover:shadow-md transition">
+            <div class="bg-white/10 backdrop-blur-lg rounded-2xl shadow-lg border border-white/20 p-5 flex items-center justify-between transition duration-300 transform hover:-translate-y-1">
                 <div>
-                    <h3 class="text-sm text-gray-500 dark:text-gray-400">عدد التعليقات</h3>
-                    <p class="text-3xl font-semibold text-gray-800 dark:text-gray-100 mt-1">245</p>
+                    <h3 class="text-sm font-medium text-gray-300">عدد التعليقات</h3>
+                    <p class="text-3xl font-bold text-white mt-1">245</p> {{-- يمكنك تغيير هذا الرقم لمتغير ديناميكي --}}
                 </div>
-                <div class="bg-yellow-100 dark:bg-yellow-900 text-yellow-600 dark:text-yellow-300 p-3 rounded-lg">
-                    <x-heroicon-o-chat-bubble-left-ellipsis class="w-6 h-6" />
+                <div class="bg-[#00ADB5]/20 text-[#00ADB5] p-3 rounded-full">
+                     <i class="fas fa-comments fa-lg"></i>
                 </div>
             </div>
 
-            <!-- بطاقة: الزيارات -->
-            <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-5 flex items-center justify-between hover:shadow-md transition">
+            <div class="bg-white/10 backdrop-blur-lg rounded-2xl shadow-lg border border-white/20 p-5 flex items-center justify-between transition duration-300 transform hover:-translate-y-1">
                 <div>
-                    <h3 class="text-sm text-gray-500 dark:text-gray-400">زيارات اليوم</h3>
-                    <p class="text-3xl font-semibold text-gray-800 dark:text-gray-100 mt-1">1,245</p>
+                    <h3 class="text-sm font-medium text-gray-300">زيارات اليوم</h3>
+                    <p class="text-3xl font-bold text-white mt-1">1,245</p> {{-- يمكنك تغيير هذا الرقم لمتغير ديناميكي --}}
                 </div>
-                <div class="bg-red-100 dark:bg-red-900 text-red-600 dark:text-red-300 p-3 rounded-lg">
-                    <x-heroicon-o-chart-bar class="w-6 h-6" />
+                <div class="bg-[#00ADB5]/20 text-[#00ADB5] p-3 rounded-full">
+                     <i class="fas fa-chart-line fa-lg"></i>
                 </div>
             </div>
 
         </div>
 
-        <!-- قسم إضافي -->
-        <div class="mt-10 bg-white dark:bg-gray-800 rounded-xl shadow p-6">
-            <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-4">مرحباً، {{ Auth::user()->name ?? 'المسؤول' }} 👋</h3>
-            <p class="text-gray-600 dark:text-gray-300 leading-relaxed">
+        <div class="mt-10 bg-white/10 backdrop-blur-lg rounded-2xl shadow-lg border border-white/20 p-8">
+            <h3 class="text-xl font-bold text-white mb-2">مرحباً بعودتك، {{ Auth::user()->name ?? 'المسؤول' }} 👋</h3>
+            <p class="text-gray-300 leading-relaxed mb-6">
                 من هنا يمكنك إدارة المستخدمين، الإشراف على المقالات، وتتبع الإحصائيات اليومية لموقعك.
             </p>
+            <a href="#" class="inline-block py-2 px-5 bg-[#00ADB5] hover:bg-[#02C39A] text-white font-semibold rounded-lg shadow-md transition duration-300 transform hover:scale-105">
+                <i class="fas fa-plus-circle mr-2"></i>
+                إضافة مقال جديد
+            </a>
         </div>
     </div>
 </x-app-layout>
