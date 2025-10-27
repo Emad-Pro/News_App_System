@@ -54,7 +54,6 @@
             font-size: 0.9rem;
             color: #ddd;
         }
-
         @media (max-width: 768px) {
             h1 {
                 font-size: 3rem;
