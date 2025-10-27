@@ -11,7 +11,18 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <link rel="stylesheet" href="{{ asset('build/assets/app-zALXTTkg.css') }}">
 
+   @if(app()->environment('local'))
+    {{-- اثناء التطوير فقط --}}
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+@else
+    {{-- في الإنتاج --}}
+    @php
+        $manifest = json_decode(file_get_contents(public_path('build/manifest.json')), true);
+    @endphp
+
+    <link rel="stylesheet" href="{{ asset('build/' . $manifest['resources/css/app.css']['file']) }}">
+    <script src="{{ asset('build/' . $manifest['resources/js/app.js']['file']) }}" defer></script>
+@endif
     
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
 
