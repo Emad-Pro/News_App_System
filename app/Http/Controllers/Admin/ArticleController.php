@@ -37,6 +37,21 @@ class ArticleController extends Controller
     return view('admin.articles.index', compact('articles', 'categories'));
 }
 
+ // Make sure this is at the top of the file
+
+// Paste this entire function inside your ArticleController class
+public function toggleComments(Article $article)
+{
+    // Flip the current value (if true it becomes false, and vice-versa)
+    $article->comments_enabled = !$article->comments_enabled;
+    $article->save();
+
+    $message = $article->comments_enabled 
+        ? __('messages.comments_enabled_success')
+        : __('messages.comments_disabled_success');
+
+    return back()->with('success', $message);
+}
     public function create()
     {
         $categories = Category::all();

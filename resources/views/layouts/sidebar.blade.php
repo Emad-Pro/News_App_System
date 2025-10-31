@@ -2,40 +2,52 @@
     <div class="flex items-center justify-between mb-10">
         <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-3">
             <img src="https://img.icons8.com/?size=100&id=59843&format=png&color=00ADB5" class="w-10" alt="Logo">
-            <h2 class="text-xl font-bold text-white">لوحة التحكم</h2>
+            <h2 class="text-xl font-bold text-white">{{ __('messages.dashboard_title') }}</h2>
         </a>
         <button id="close-sidebar-btn" class="md:hidden text-gray-300 hover:text-white">
             <i class="fas fa-times text-xl"></i>
         </button>
     </div>
 
-    <nav class="space-y-2">
-        {{-- دالة is_active لتحديد الرابط النشط --}}
-        @php
-            function is_active($routeName) {
-                return request()->routeIs($routeName) 
-                    ? 'bg-[#00ADB5] text-white shadow-lg' 
-                    : 'text-gray-300 hover:bg-white/10 hover:text-white';
-            }
-        @endphp
+<nav class="space-y-2">
+    @php
+        function is_active($routeName) {
+            return request()->routeIs($routeName)
+                ? 'bg-[#00ADB5] text-white shadow-lg'
+                : 'text-gray-300 hover:bg-white/10 hover:text-white';
+        }
 
-        <a href="{{ route('admin.dashboard') }}" class="flex items-center px-3 py-2.5 rounded-lg transition-colors duration-200 {{ is_active('admin.dashboard') }}">
-            <i class="fas fa-home w-5 text-center mr-3"></i>
-            <span>الرئيسية</span>
-        </a>
-        <a href="{{ route('admin.articles.index') }}" class="flex items-center px-3 py-2.5 rounded-lg transition-colors duration-200 {{ is_active('admin.articles.*') }}">
-            <i class="fas fa-newspaper w-5 text-center mr-3"></i>
-            <span>المقالات</span>
-        </a>
-        <a href="{{ route('admin.categories.index') }}" class="flex items-center px-3 py-2.5 rounded-lg transition-colors duration-200 {{ is_active('admin.categories.*') }}">
-            <i class="fas fa-tags w-5 text-center mr-3"></i>
-            <span>إدارة الفئات</span>
-        </a>
-        <a href="{{ route('admin.users.index') }}" class="flex items-center px-3 py-2.5 rounded-lg transition-colors duration-200 {{ is_active('admin.users.*') }}">
-            <i class="fas fa-users w-5 text-center mr-3"></i>
-            <span>المستخدمين</span>
-        </a>
-    </nav>
+        // نحدد اتجاه الصفحة
+        $isRtl = app()->getLocale() === 'ar';
+        $marginClass = $isRtl ? 'ml-3' : 'mr-3';
+    @endphp
+
+    <a href="{{ route('admin.dashboard') }}" class="flex items-center px-3 py-2.5 rounded-lg transition-colors duration-200 {{ is_active('admin.dashboard') }}">
+        <i class="fas fa-home w-5 text-center {{ $marginClass }}"></i>
+        <span>{{ __('messages.home') }}</span>
+    </a>
+
+    <a href="{{ route('admin.articles.index') }}" class="flex items-center px-3 py-2.5 rounded-lg transition-colors duration-200 {{ is_active('admin.articles.*') }}">
+        <i class="fas fa-newspaper w-5 text-center {{ $marginClass }}"></i>
+        <span>{{ __('messages.articles') }}</span>
+    </a>
+
+    <a href="{{ route('admin.categories.index') }}" class="flex items-center px-3 py-2.5 rounded-lg transition-colors duration-200 {{ is_active('admin.categories.*') }}">
+        <i class="fas fa-tags w-5 text-center {{ $marginClass }}"></i>
+        <span>{{ __('messages.manage_categories') }}</span>
+    </a>
+
+    <a href="{{ route('admin.users.index') }}" class="flex items-center px-3 py-2.5 rounded-lg transition-colors duration-200 {{ is_active('admin.users.*') }}">
+        <i class="fas fa-users w-5 text-center {{ $marginClass }}"></i>
+        <span>{{ __('messages.users') }}</span>
+    </a>
+
+    <a href="{{ route('admin.histories.index') }}" class="flex items-center px-3 py-2.5 rounded-lg transition-colors duration-200 {{ request()->routeIs('admin.history.*') ? 'bg-[#00ADB5] text-white shadow-lg' : 'text-gray-300 hover:bg-white/10 hover:text-white' }}">
+        <i class="fas fa-landmark w-5 text-center {{ $marginClass }}"></i>
+        <span>{{ __('messages.history') }}</span>
+    </a>
+</nav>
+
 </aside>
 
 @push('scripts')

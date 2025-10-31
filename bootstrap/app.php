@@ -12,12 +12,19 @@ return Application::configure(basePath: dirname(__DIR__))
         channels: __DIR__.'/../routes/channels.php',
         health: '/up',
     )
-    ->withMiddleware(function (Middleware $middleware): void {
-    // هنا نقوم بتسجيل الـ Middleware Alias
+    ->withMiddleware(function (Middleware $middleware) {
+
+        // ✅ أسماء الـ middleware الخاصة بمكتبة Mcamara
         $middleware->alias([
-            'is.admin' => \App\Http\Middleware\IsAdmin::class,
+            'is.admin'               => \App\Http\Middleware\IsAdmin::class,
+            'localize'               => \Mcamara\LaravelLocalization\Middleware\LaravelLocalizationRoutes::class,
+            'localizationRedirect'   => \Mcamara\LaravelLocalization\Middleware\LaravelLocalizationRedirectFilter::class,
+            'localeSessionRedirect'  => \Mcamara\LaravelLocalization\Middleware\LocaleSessionRedirect::class,
+            'localeViewPath'         => \Mcamara\LaravelLocalization\Middleware\LaravelLocalizationViewPath::class,
         ]);
+
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
-    })->create();
+    })
+    ->create();
