@@ -28,21 +28,26 @@
 
         <div class="flex items-center gap-5">
 
-            <div class="relative">
-                <button id="notification-bell" class="relative p-2 text-gray-300 rounded-full hover:bg-white/10 hover:text-white focus:outline-none transition-colors">
-                    <i class="fas fa-bell"></i>
-                    <span id="notification-badge" class="absolute top-0 right-0 h-2.5 w-2.5 bg-red-500 rounded-full border-2 border-[#3a4756] hidden"></span>
-                </button>
-                
-                <div id="notification-dropdown" class="absolute left-0 mt-3 w-80 bg-black/60 backdrop-blur-lg border border-white/20 rounded-lg shadow-lg overflow-hidden hidden z-50">
-                    <div class="p-4 font-semibold border-b border-white/20 text-white">{{ __('messages.notifications') }}</div>
-                    <div id="notification-list" class="max-h-96 overflow-y-auto">
-                        {{-- يتم ملء الإشعارات هنا عبر JavaScript --}}
-                        <p class="text-center text-gray-400 p-4">{{ __('messages.no_notifications') }}</p>
-                    </div>
-                </div>
-            </div>
-            
+@php
+    $isRtl = app()->getLocale() === 'ar';
+    $dropdownDirection = $isRtl ? 'left-0' :'right-0' ;
+@endphp
+
+<div class="relative">
+    <button id="notification-bell" class="relative p-2 text-gray-300 rounded-full hover:bg-white/10 hover:text-white focus:outline-none transition-colors">
+        <i class="fas fa-bell"></i>
+        <span id="notification-badge" class="absolute top-0 left-0 h-2.5 w-2.5 bg-red-500 rounded-full border-2 border-[#3a4756] hidden"></span>
+    </button>
+
+    <div id="notification-dropdown"
+         class="absolute {{ $dropdownDirection }} mt-3 w-80 max-w-[90vw] bg-black/60 backdrop-blur-lg border border-white/20 rounded-lg shadow-lg overflow-hidden hidden z-50">
+        <div class="p-4 font-semibold border-b border-white/20 text-white">{{ __('messages.notifications') }}</div>
+        <div id="notification-list" class="max-h-96 overflow-y-auto">
+            <p class="text-center text-gray-400 p-4">{{ __('messages.no_notifications') }}</p>
+        </div>
+    </div>
+</div>
+
             <span class="text-gray-200 font-medium hidden sm:block">{{ Auth::user()->name ?? 'Admin' }}</span>
             
             <form method="POST" action="{{ route('logout') }}">

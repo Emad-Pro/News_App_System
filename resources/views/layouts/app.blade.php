@@ -4,12 +4,12 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-
+    
     <title>{{ config('app.name', 'Laravel') }}</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    <link rel="stylesheet" href="{{ asset('build/assets/app-zALXTTkg.css') }}">
+    <!-- <link rel="stylesheet" href="{{ asset('build/assets/app-zALXTTkg.css') }}"> -->
 
    @if(app()->environment('local'))
     {{-- اثناء التطوير فقط --}}
@@ -111,7 +111,7 @@
                 
                 notificationList.innerHTML = '';
                 if (notifications.length === 0) {
-                    notificationList.innerHTML = '<p class="text-center text-gray-400 p-4">لا توجد إشعارات جديدة.</p>';
+                    notificationList.innerHTML = '<p class="text-center text-gray-400 p-4">{{ __('messages.no_notifications') }}</p>';
                     return;
                 }
 

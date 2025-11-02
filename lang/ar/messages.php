@@ -23,6 +23,8 @@ return [
     // Navbar
     'notifications' => 'الإشعارات',
     'no_notifications' => 'لا توجد إشعارات جديدة.',
+    'commented_on_article' => 'علق على مقال',
+    'view_all_notifications' => 'عرض جميع الإشعارات',
     'logout' => 'تسجيل خروج',
     'arabic' => 'العربية',
     'english' => 'الإنجليزية',
@@ -140,5 +142,17 @@ return [
     'event_images' => 'الصور',
     'cancel' => 'إلغاء',
     'save_event' => 'حفظ الحدث',
+    "Comments"=> "التعليقات",
+"Total Views"=> "إجمالي المشاهدات",
+"Top Performing Articles"=> "أبرز المقالات أداءً",
+"New Users (Last 7 Days)"=> "المستخدمون الجدد (آخر 7 أيام)",
+"Latest Articles"=> "أحدث المقالات",
+"Latest Comments"=> "أحدث التعليقات",
+"By"=> "بواسطة",
+"No articles found."=> "لا توجد مقالات.",
+"No comments found."=> "لا توجد تعليقات.",
+"View on article"=> "عرض على المقال",
+"Likes"=> "الإعجابات",
+"New Users"=> "مستخدمون جدد"
 ];
 

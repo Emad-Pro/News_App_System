@@ -22,7 +22,7 @@
                                     <div class="flex-1">
                                         <p class="font-semibold text-white">
                                             <span class="font-bold">{{ $notification->data['user_name'] }}</span>
-                                            علّق على مقال: "{{ $notification->data['article_title'] }}"
+                                            {{ __('messages.commented_on_article') }}: "{{ $notification->data['article_title'] }}"
                                         </p>
                                         <span class="text-xs text-gray-400">{{ $notification->created_at->diffForHumans() }}</span>
                                     </div>
@@ -34,7 +34,7 @@
                         @empty
                             <div class="text-center text-gray-400 py-12">
                                 <i class="fas fa-bell-slash fa-3x mb-3"></i>
-                                <p>لا يوجد إشعارات لعرضها.</p>
+                                <p>{{ __('messages.no_notifications') }}</p>
                             </div>
                         @endforelse
                     </div>
