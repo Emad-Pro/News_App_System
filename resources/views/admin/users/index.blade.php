@@ -76,11 +76,11 @@
 
                                         <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
                                             <div class="flex items-center justify-center gap-6">
-                                                <a href="{{ route('admin.users.edit', $user) }}" 
+                                                <!-- <a href="{{ route('admin.users.edit', $user) }}" 
                                                    class="text-blue-400 hover:text-blue-300" 
                                                    title="{{ __('messages.edit_user') }}">
                                                     <i class="fas fa-pen fa-lg"></i>
-                                                </a>
+                                                </a> -->
 
                                                 <form action="{{ route('admin.users.toggleStatus', $user) }}" method="POST">
                                                     @csrf
