@@ -25,7 +25,8 @@ class User extends Authenticatable
         'password',
         'phone',     // <-- 2. أضف هذه الحقول
         'google_id',
-        'avatar',    // <-- وهذا أهم حقل لمشكلتك الحالية
+        'avatar',
+        'auth_provider',
     ];
 
     /**

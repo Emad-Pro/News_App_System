@@ -10,6 +10,7 @@ use Illuminate\Validation\Rules;
 use Laravel\Socialite\Facades\Socialite;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 class AuthController extends Controller
 {
     public function loginWithEmail(Request $request)
@@ -64,6 +65,7 @@ class AuthController extends Controller
         'name' => $request->name,
         'email' => $request->email,
         'password' => Hash::make($request->password),
+        'auth_provider' => 'email',
         'avatar' => $avatarPath, // حفظ مسار الصورة في قاعدة البيانات
     ]);
 
@@ -153,39 +155,47 @@ public function verifyOtp(Request $request)
     ]);
 }
 public function authWithGoogle(Request $request)
-{
-    $request->validate([
-        'access_token' => 'required|string',
-    ]);
-
-    try {
-        // نستخدم Socialite للتحقق من التوكن الذي أرسله الجوال
-        $googleUser = Socialite::driver('google')->stateless()->userFromToken($request->access_token);
-        
-        // ابحث عن المستخدم أو أنشئ حسابًا جديدًا له
-        $user = User::updateOrCreate([
-            'google_id' => $googleUser->id,
-        ], [
-            'name' => $googleUser->name,
-            'email' => $googleUser->email,
-            'avatar' => $googleUser->avatar,
-            'password' => bcrypt(str()->random(16)) // كلمة مرور عشوائية لأن الدخول عبر جوجل
+    {
+        // 1. تحقق من صحة البيانات (تأكد من وجود id_token)
+        $request->validate([
+            'id_token' => 'required|string',
         ]);
+
+        try {
+            // 2. استخدم Socialite للتحقق من التوكن وجلب بيانات المستخدم
+            // ملاحظة: Socialite يحتاج إلى إعداد مسبق لمعالجة التوكن
+            $socialiteUser = \Socialite::driver('google')->userFromToken($request->id_token);
+        } catch (\Exception $e) {
+            Log::error('Google Token Validation Failed: ' . $e->getMessage());
+            return response()->json(['message' => 'Google ID token is invalid.'], 401);
+        }
         
-        // أنشئ توكن خاص بتطبيقنا
-        $token = $user->createToken('auth_token')->plainTextToken;
-        
+        // 3. البحث عن المستخدم أو إنشاؤه
+        $user = User::where('google_id', $socialiteUser->id)->first();
+
+        if (!$user) {
+            // إنشاء مستخدم جديد إذا لم يكن موجودًا
+            $user = User::create([
+                'name' => $socialiteUser->name,
+                'email' => $socialiteUser->email,
+                'google_id' => $socialiteUser->id,
+                'auth_provider' => 'Google',
+                'email_verified_at' => now(), // يعتبر موثوقًا به
+                'password' => Hash::make(Str::random(16)), // كلمة مرور عشوائية غير مستخدمة
+            ]);
+        }
+
+        // 4. إصدار Access Token
+        $token = $user->createToken('authToken')->plainTextToken;
+
+        // 5. إرجاع الرد النهائي (الذي يتوافق مع الـ Entity الذي أنشأناه)
         return response()->json([
             'message' => 'User authenticated successfully',
             'user' => $user,
             'access_token' => $token,
             'token_type' => 'Bearer',
-        ]);
-
-    } catch (\Exception $e) {
-        return response()->json(['message' => 'Invalid access token or authentication failed.'], 401);
+        ], 200);
     }
-}
 public function logout(Request $request)
 {
     // الحصول على التوكن الذي استخدمه المستخدم لإجراء هذا الطلب وحذفه

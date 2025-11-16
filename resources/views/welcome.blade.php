@@ -3,227 +3,91 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <script>
+        // 1. منع وميض اللغة (يقرأ من ذاكرة المتصفح)
+        if (localStorage.getItem('locale') === 'ar') {
+            document.documentElement.dir = 'rtl';
+        } else if (localStorage.getItem('locale') === 'en') {
+            document.documentElement.dir = 'ltr';
+        }
+
+        // 2. منع وميض الوضع المظلم (يقرأ من ذاكرة المتصفح)
+        if (localStorage.getItem('color-theme') === 'dark' || 
+           (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    </script>
     <title>{{ __('messages.welcome_title') }}</title>
+    
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-<style>
-    html, body {
-        height: 100%;
-        margin: 0;
-    }
-    body {
-        font-family: 'Cairo', sans-serif;
-        background: linear-gradient(135deg, #283E51, #485563);
-        color: #f0f0f0;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        padding: 20px;
-        box-sizing: border-box;
-        text-align: center;
-        direction: inherit;
-    }
+    
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 
-    main {
-        flex: 1;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 100%;
-    }
-
-    .card {
-        background: rgba(255, 255, 255, 0.05);
-        backdrop-filter: blur(10px);
-        border-radius: 20px;
-        padding: 40px;
-        text-align: center;
-        max-width: 600px;
-        width: 100%;
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-    }
-
-    h1 {
-        font-size: 2.5rem;
-        margin-bottom: 20px;
-        color: #fff;
-        font-weight: 700;
-    }
-
-    p {
-        font-size: 1.1rem;
-        margin: 8px 0;
-        line-height: 1.6;
-    }
-
-    /* قسم التحديثات */
-    .updates-section {
-        margin-top: 30px;
-        text-align: start;
-        border-top: 1px solid rgba(255, 255, 255, 0.2);
-        padding-top: 20px;
-    }
-
-    /* استخدم استعلامات الاتجاه */
-    [dir="rtl"] .updates-section {
-        text-align: right;
-    }
-
-    [dir="ltr"] .updates-section {
-        text-align: left;
-    }
-
-    .updates-section h2 {
-        font-size: 1.3rem;
-        margin-bottom: 15px;
-        color: #00ADB5;
-    }
-
-    .updates-section i {
-        margin-inline-start: 10px;
-    }
-
-    .updates-section ul {
-        list-style: none;
-        padding: 0;
-        margin: 0;
-    }
-
-    .updates-section li {
-        padding: 5px 0;
-        font-size: 1rem;
-        opacity: 0.9;
-    }
-
-    /* الأزرار */
-    .button-container {
-        margin-top: 40px;
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: 15px;
-    }
-
-    a.button {
-        display: inline-flex;
-        align-items: center;
-        gap: 10px;
-        padding: 12px 28px;
-        border-radius: 50px;
-        font-weight: 600;
-        text-decoration: none;
-        font-size: 1rem;
-        transition: all 0.3s ease;
-        border: none;
-        cursor: pointer;
-    }
-
-    .button.primary {
-        background-color: #00ADB5;
-        color: #fff;
-    }
-
-    .button.secondary {
-        background-color: rgba(255, 255, 255, 0.1);
-        color: #fff;
-    }
-
-    .button:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 4px 15px rgba(0,0,0,0.25);
-    }
-
-    footer {
-        width: 100%;
-        text-align: center;
-        padding: 20px 0;
-        font-size: 0.9rem;
-        color: #bbb;
-    }
-
-    /* النافذة المنبثقة */
-    .modal {
-        display: none;
-        position: fixed;
-        z-index: 1000;
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0,0,0,0.85);
-        backdrop-filter: blur(5px);
-        align-items: center;
-        justify-content: center;
-    }
-
-    .modal-content {
-        position: relative;
-        width: 90%;
-        max-width: 800px;
-    }
-
-    .video-wrapper {
-        position: relative;
-        padding-bottom: 56.25%; /* 16:9 */
-        height: 0;
-    }
-
-    .video-wrapper iframe {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        border-radius: 10px;
-    }
-
-    .close-button {
-        position: absolute;
-        top: -40px;
-        inset-inline-end: 0; /* بدل right */
-        color: #fff;
-        font-size: 35px;
-        font-weight: bold;
-        cursor: pointer;
-        transition: color 0.2s;
-    }
-
-    .close-button:hover {
-        color: #00ADB5;
-    }
-
-    @media (max-width: 768px) {
-        .card { padding: 30px; }
-        h1 { font-size: 2rem; }
-        .updates-section h2 { font-size: 1.2rem; }
-        .button-container { flex-direction: column; align-items: center; }
-    }
-</style>
+    <style>
+        body { font-family: 'Cairo', sans-serif; }
+    </style>
 </head>
-<body>
+<body class="flex flex-col items-center justify-center min-h-screen 
+             bg-gradient-to-br from-[#283E51] to-[#485563] 
+             text-gray-100 dark:text-gray-100 
+             text-center p-5 transition-colors duration-300">
 
-    <main>
-        <div class="card">
-            <h1>{{ __('messages.welcome_title') }}</h1>
-            <p>{{ __('messages.welcome_description') }}</p>
+    <div class="absolute top-4 end-4 flex items-center gap-3">
+        <div x-data="{ open: false }" class="relative">
+            <button @click="open = !open" class="p-2 text-gray-300 rounded-full hover:bg-white/20 hover:text-white focus:outline-none transition-colors">
+                <i class="fas fa-globe"></i>
+            </button>
+            <div x-show="open" 
+                 @click.away="open = false" 
+                 x-transition
+                 class="absolute ltr:right-0 rtl:left-0 mt-3 w-36 bg-black/60 backdrop-blur-lg border border-white/20 rounded-lg shadow-lg overflow-hidden z-50">
+                
+                @foreach(LaravelLocalization::getSupportedLocales() as $localeCode => $properties)
+                    <a rel="alternate" hreflang="{{ $localeCode }}" href="{{ LaravelLocalization::getLocalizedURL($localeCode, null, [], true) }}"
+                       class="block px-4 py-2 text-sm text-gray-200 hover:bg-white/10 {{ app()->getLocale() == $localeCode ? 'bg-white/20' : '' }}">
+                        {{ $properties['native'] }}
+                    </a>
+                @endforeach
+            </div>
+        </div>
 
-            <div class="updates-section">
-                <h2><i class="fas fa-rocket"></i>{{ __('messages.latest_updates') }} </h2>
-                <ul>
-                    <li><i class="fas fa-check-circle"></i> {{ __('messages.update_api_speed') }} </li>
-                    <li><i class="fas fa-palette"></i> {{ __('messages.update_design') }} </li>
-                    <li><i class="fas fa-shield-alt"></i>{{ __('messages.update_security') }} </li>
+        <button id="theme-toggle" type="button" class="p-2 text-gray-300 rounded-full hover:bg-white/20 hover:text-white focus:outline-none transition-colors">
+            <svg id="theme-toggle-dark-icon" class="hidden w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
+            <svg id="theme-toggle-light-icon" class="hidden w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" fill-rule="evenodd" clip-rule="evenodd"></path></svg>
+        </button>
+    </div>
+    <main class="flex-1 flex items-center justify-center w-full">
+        <div class="bg-white/5 backdrop-blur-lg rounded-2xl p-8 md:p-10 shadow-2xl border border-white/10 w-full max-w-2xl">
+            
+            <h1 class="text-3xl md:text-4xl mb-5 text-white font-bold">
+                {{ __('messages.welcome_title') }}
+            </h1>
+            
+            <p class="text-lg my-2 leading-relaxed text-gray-200 dark:text-gray-200">
+                {{ __('messages.welcome_description') }}
+            </p>
+
+            <div class="mt-8 text-start ltr:text-left rtl:text-right border-t border-white/20 pt-5">
+                <h2 class="text-lg md:text-xl mb-4 text-[#00ADB5] font-semibold">
+                    <i class="fas fa-rocket ltr:mr-2.5 rtl:ml-2.5"></i>{{ __('messages.latest_updates') }}
+                </h2>
+                <ul class="list-none p-0 m-0">
+                    <li class="py-1.5 text-base opacity-90"><i class="fas fa-check-circle text-green-400 ltr:mr-2.5 rtl:ml-2.5"></i> {{ __('messages.update_api_speed') }} </li>
+                    <li class="py-1.5 text-base opacity-90"><i class="fas fa-palette text-blue-400 ltr:mr-2.5 rtl:ml-2.5"></i> {{ __('messages.update_design') }} </li>
+                    <li class="py-1.5 text-base opacity-90"><i class="fas fa-shield-alt text-red-400 ltr:mr-2.5 rtl:ml-2.5"></i>{{ __('messages.update_security') }} </li>
                 </ul>
             </div>
 
-            <div class="button-container">
-                <a href="{{ route('admin.dashboard') }}" class="button primary">
+            <div class="mt-10 flex flex-wrap justify-center gap-4 flex-col items-center sm:flex-row">
+                <a href="{{ route('admin.dashboard') }}" class="inline-flex items-center gap-2.5 py-3 px-7 rounded-full font-semibold text-base transition-all duration-300 ease-in-out hover:-translate-y-1 hover:shadow-lg bg-[#00ADB5] text-white">
                     <i class="fas fa-tachometer-alt"></i>
                     {{ __('messages.go_to_dashboard') }}
                 </a>
-                <a href="#" id="openVideoBtn" class="button secondary">
+                <a href="#" id="openVideoBtn" class="inline-flex items-center gap-2.5 py-3 px-7 rounded-full font-semibold text-base transition-all duration-300 ease-in-out hover:-translate-y-1 hover:shadow-lg bg-white/10 text-white">
                     <i class="fas fa-play-circle"></i>
                     {{ __('messages.watch_demo') }}
                 </a>
@@ -231,50 +95,83 @@
         </div>
     </main>
 
-    <footer>
+    <footer class="w-full text-center py-5 text-sm text-gray-400">
         &copy; {{ date('Y') }} {{ __('messages.footer_text') }}
     </footer>
 
-    <div id="videoModal" class="modal">
-        <div class="modal-content">
-            <span class="close-button">&times;</span>
-            <div class="video-wrapper">
-                <iframe id="demoVideo" width="560" height="315" src="https://www.youtube.com/embed/dQw4w9WgXcQ" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    <div id="videoModal" class="hidden fixed z-[1000] inset-0 bg-black/80 backdrop-blur-sm items-center justify-center">
+        <div class="relative w-11/12 max-w-3xl">
+            <span class="close-button absolute -top-10 ltr:right-0 rtl:left-0 text-white text-4xl font-bold cursor-pointer transition-colors duration-200 hover:text-[#00ADB5]">&times;</span>
+            <div class="relative aspect-video w-full">
+                <iframe id="demoVideo" class="absolute inset-0 w-full h-full rounded-lg" src="https://www.youtube.com/embed/dQw4w9WgXcQ" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
             </div>
         </div>
     </div>
 
     <script>
-        // جلب العناصر
+        // --- سكربت مزامنة اللغة (لحفظ الاختيار للزيارة القادمة) ---
+        localStorage.setItem('locale', '{{ app()->getLocale() }}');
+
+        // --- سكربت النافذة المنبثقة للفيديو ---
         const modal = document.getElementById('videoModal');
         const openBtn = document.getElementById('openVideoBtn');
         const closeBtn = document.querySelector('.close-button');
         const videoFrame = document.getElementById('demoVideo');
-        const videoSrc = videoFrame.src; // حفظ رابط الفيديو الأصلي
+        const videoSrc = videoFrame.src; 
 
-        // عند الضغط على زر "مشاهدة فيديو"
         openBtn.onclick = function(e) {
-            e.preventDefault(); // منع سلوك الرابط الافتراضي
+            e.preventDefault();
             modal.style.display = 'flex';
-            videoFrame.src = videoSrc; // إعادة تعيين الرابط لضمان التشغيل
+            videoFrame.src = videoSrc;
         }
 
-        // دالة إغلاق النافذة
         function closeModal() {
             modal.style.display = 'none';
-            videoFrame.src = ''; // إيقاف الفيديو عند الإغلاق لمنع تشغيله في الخلفية
+            videoFrame.src = '';
         }
-
-        // عند الضغط على زر الإغلاق (X)
         closeBtn.onclick = closeModal;
-
-        // عند الضغط على أي مكان خارج الفيديو
         window.onclick = function(event) {
             if (event.target == modal) {
                 closeModal();
             }
         }
-    </script>
 
-</body>
+        // --- سكربت التحكم بالوضع المظلم ---
+        document.addEventListener('DOMContentLoaded', function () {
+            var themeToggleDarkIcon = document.getElementById('theme-toggle-dark-icon');
+            var themeToggleLightIcon = document.getElementById('theme-toggle-light-icon');
+
+            if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                themeToggleLightIcon.classList.remove('hidden');
+            } else {
+                themeToggleDarkIcon.classList.remove('hidden');
+            }
+
+            var themeToggleBtn = document.getElementById('theme-toggle');
+
+            themeToggleBtn.addEventListener('click', function() {
+                themeToggleDarkIcon.classList.toggle('hidden');
+                themeToggleLightIcon.classList.toggle('hidden');
+
+                if (localStorage.getItem('color-theme')) {
+                    if (localStorage.getItem('color-theme') === 'light') {
+                        document.documentElement.classList.add('dark');
+                        localStorage.setItem('color-theme', 'dark');
+                    } else {
+                        document.documentElement.classList.remove('dark');
+                        localStorage.setItem('color-theme', 'light');
+                    }
+                } else {
+                    if (document.documentElement.classList.contains('dark')) {
+                        document.documentElement.classList.remove('dark');
+                        localStorage.setItem('color-theme', 'light');
+                    } else {
+                        document.documentElement.classList.add('dark');
+                        localStorage.setItem('color-theme', 'dark');
+                    }
+                }
+            });
+        });
+    </script>
+    </body>
 </html>
