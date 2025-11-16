@@ -19,9 +19,9 @@
     </style>
 </head>
 <body class="antialiased">
-    <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-gradient-to-br from-[#283E51] to-[#485563] px-4">
+    <div class="min-h-screen flex flex-col justify-center items-center pt-6 sm:pt-0 bg-gradient-to-br from-[#283E51] to-[#485563] px-4">
         
-        {{-- البطاقة الزجاجية التي ستحتوي على النموذج --}}
+        {{-- $slot يحتوي على البطاقة الزجاجية --}}
         <div class="w-full sm:max-w-md mt-6 px-6 py-8 bg-white/10 backdrop-blur-lg shadow-xl border border-white/20 overflow-hidden sm:rounded-2xl">
             {{ $slot }}
         </div>
