@@ -12,7 +12,7 @@
 
 {{-- @vite(['resources/css/app.css', 'resources/js/app.js']) --}}
 
-<link rel="stylesheet" href="{{ asset('build/assets/app-BfC1Evvt.css') }}">
+<link rel="stylesheet" href="/build/assets/app-BfC1Evvt.css">
 
     <style>
         /* ضمان تطبيق الخط على كل النصوص */
