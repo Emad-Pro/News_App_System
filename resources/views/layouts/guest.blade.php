@@ -10,8 +10,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 
-    {{-- Vite --}}
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+{{-- @vite(['resources/css/app.css', 'resources/js/app.js']) --}}
+
+<link rel="stylesheet" href="{{ asset('build/assets/app-BfC1Evvt.css') }}">
 
     <style>
         /* ضمان تطبيق الخط على كل النصوص */
