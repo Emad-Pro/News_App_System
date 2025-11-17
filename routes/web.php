@@ -41,7 +41,7 @@ Route::group(
 
     // Public homepage
     Route::get('/', function () {
-        return view('welcome');
+        return view('admin/welcome');
     });
 
     // === Admin Dashboard Routes ===
