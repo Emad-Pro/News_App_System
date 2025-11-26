@@ -1,78 +1,44 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use App\Models\User;
-use Illuminate\Support\Facades\Mail;
-use App\Mail\ResetPasswordOtpMail; // استيراد كلاس الإيميل
-use Illuminate\Support\Facades\Hash;
-use Carbon\Carbon;
+use Illuminate\Support\Facades\Password;
+use Illuminate\View\View;
 
-class PasswordResetController extends Controller
+class PasswordResetLinkController extends Controller
 {
-    // 1. دالة إرسال الكود (Send OTP)
-    public function sendResetLink(Request $request)
+    /**
+     * Display the password reset link request view.
+     */
+    public function create(): View
     {
-        $request->validate(['email' => 'required|email|exists:users,email']);
-
-        // توليد كود عشوائي من 6 أرقام
-        $otp = rand(100000, 999999);
-        
-        $user = User::where('email', $request->email)->first();
-        
-        // حفظ الكود ووقت الانتهاء (بعد 15 دقيقة) في قاعدة البيانات
-        $user->update([
-            'otp_code' => $otp,
-            'otp_expires_at' => Carbon::now()->addMinutes(15)
-        ]);
-
-        // إرسال الإيميل
-        try {
-            Mail::to($user->email)->send(new ResetPasswordOtpMail($otp));
-            
-            return response()->json([
-                'message' => 'تم إرسال رمز التحقق إلى بريدك الإلكتروني.'
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'message' => 'حدث خطأ أثناء إرسال الإيميل.',
-                'error' => $e->getMessage()
-            ], 500);
-        }
+        return view('auth.forgot-password');
     }
 
-    // 2. دالة تغيير كلمة المرور (Reset Password)
-    public function resetPassword(Request $request)
+    /**
+     * Handle an incoming password reset link request.
+     *
+     * @throws \Illuminate\Validation\ValidationException
+     */
+    public function store(Request $request): RedirectResponse
     {
         $request->validate([
-            'email' => 'required|email|exists:users,email',
-            'otp' => 'required|digits:6', // التأكد أن الكود 6 أرقام
-            'password' => 'required|min:8|confirmed',
+            'email' => ['required', 'email'],
         ]);
 
-        $user = User::where('email', $request->email)->first();
+        // We will send the password reset link to this user. Once we have attempted
+        // to send the link, we will examine the response then see the message we
+        // need to show to the user. Finally, we'll send out a proper response.
+        $status = Password::sendResetLink(
+            $request->only('email')
+        );
 
-        // التحقق من صحة الكود
-        if ($user->otp_code !== $request->otp) {
-            return response()->json(['message' => 'رمز التحقق غير صحيح.'], 400);
-        }
-
-        // التحقق من صلاحية الوقت
-        if (Carbon::now()->gt($user->otp_expires_at)) {
-            return response()->json(['message' => 'انتهت صلاحية رمز التحقق، حاول مرة أخرى.'], 400);
-        }
-
-        // تحديث كلمة المرور وتنظيف الكود
-        $user->update([
-            'password' => Hash::make($request->password),
-            'otp_code' => null,
-            'otp_expires_at' => null
-        ]);
-
-        return response()->json([
-            'message' => 'تم تغيير كلمة المرور بنجاح. يمكنك تسجيل الدخول الآن.'
-        ]);
+        return $status == Password::RESET_LINK_SENT
+                    ? back()->with('status', __($status))
+                    : back()->withInput($request->only('email'))
+                        ->withErrors(['email' => __($status)]);
     }
 }

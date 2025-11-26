@@ -4,52 +4,41 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Password;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Rules;
+use App\Models\User;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\ResetPasswordOtpMail; // 1. تأكد من استيراد كلاس البريد
+use Carbon\Carbon;
 
 class PasswordResetController extends Controller
 {
-    /**
-     * الخطوة 1: إرسال رابط إعادة التعيين
-     */
     public function sendResetLink(Request $request)
     {
-        $request->validate(['email' => 'required|email']);
+        // 1. التحقق من الإيميل
+        $request->validate(['email' => 'required|email|exists:users,email']);
 
-        // هذا السطر يقوم بكل العمل: يولد الرمز ويرسل الإيميل
-        $status = Password::sendResetLink($request->only('email'));
-
-        if ($status === Password::RESET_LINK_SENT) {
-            return response()->json(['message' => 'Password reset link sent successfully.']);
-        }
-
-        // إذا فشل (مثلاً الإيميل غير موجود)
-        return response()->json(['message' => 'Unable to send password reset link.'], 400);
-    }
-
-    /**
-     * الخطوة 2: تحديث كلمة المرور
-     */
-    public function resetPassword(Request $request)
-    {
-        $request->validate([
-            'token' => 'required',
-            'email' => 'required|email',
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
-        ]);
+        // 2. توليد الكود الرقمي
+        $otp = rand(100000, 999999);
         
-        // هذا السطر يتحقق من الرمز والبريد ثم يقوم بالتحديث
-        $status = Password::reset($request->all(), function ($user, $password) {
-            $user->forceFill([
-                'password' => Hash::make($password)
-            ])->save();
-        });
+        // 3. حفظ الكود في الداتا بيز
+        $user = User::where('email', $request->email)->first();
+        $user->update([
+            'otp_code' => $otp,
+            'otp_expires_at' => Carbon::now()->addMinutes(15)
+        ]);
 
-        if ($status === Password::PASSWORD_RESET) {
-            return response()->json(['message' => 'Password has been reset successfully.']);
+        // 4. إرسال الإيميل يدوياً (هنا التغيير المهم)
+        // لا نستخدم Password::sendResetLink لأنها ترسل الرابط الافتراضي
+        try {
+            Mail::to($user->email)->send(new ResetPasswordOtpMail($otp));
+            
+            return response()->json([
+                'message' => 'تم إرسال رمز التحقق (OTP) المكون من 6 أرقام إلى بريدك.'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'حدث خطأ أثناء الإرسال.',
+                'error' => $e->getMessage()
+            ], 500);
         }
-
-        return response()->json(['message' => 'Invalid token or email.'], 400);
     }
 }
