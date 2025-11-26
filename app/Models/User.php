@@ -27,6 +27,8 @@ class User extends Authenticatable
         'google_id',
         'avatar',
         'auth_provider',
+        'otp_code',       // 👈 مهم جداً
+    'otp_expires_at', // 👈 مهم جداً
     ];
 
     /**
