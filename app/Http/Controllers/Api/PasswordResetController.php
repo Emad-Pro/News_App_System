@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Mail;
 use App\Mail\ResetPasswordOtpMail;
 use Illuminate\Support\Facades\Hash; // 👈 هذا السطر هو سبب الخطأ غالباً (كان مفقوداً)
 use Carbon\Carbon; // 👈 وهذا أيضاً للتعامل مع الوقت
-
+use Illuminate\Support\Facades\Log; // تأكد من إضافة هذا السطر في أعلى الملف
 class PasswordResetController extends Controller
 {
     // 1. دالة إرسال الكود
@@ -37,42 +37,48 @@ class PasswordResetController extends Controller
 
     // 2. دالة إعادة التعيين (التي تسبب المشكلة)
     public function resetPassword(Request $request)
-    {
-        // التحقق من المدخلات
-        $request->validate([
-            'email' => 'required|email|exists:users,email',
-            'otp' => 'required',
-            'password' => 'required|min:8|confirmed',
-        ]);
+{
+    $request->validate([
+        'email' => 'required|email|exists:users,email',
+        'otp' => 'required',
+        'password' => 'required|min:8|confirmed',
+    ]);
 
-        // جلب المستخدم
-        $user = User::where('email', $request->email)->first();
+    $user = User::where('email', $request->email)->first();
 
-        // 1. التأكد من أن المستخدم موجود (حماية إضافية لتجنب خطأ 500)
-        if (!$user) {
-            return response()->json(['message' => 'المستخدم غير موجود.'], 404);
-        }
-
-        // 2. التأكد من صحة الكود
-        // نستخدم (string) لضمان مقارنة نصوص حتى لو كان الرقم يبدأ بصفر
-        if ((string)$user->otp_code !== (string)$request->otp) {
-            return response()->json(['message' => 'رمز التحقق غير صحيح.'], 400);
-        }
-
-        // 3. التأكد من صلاحية الوقت
-        if (!$user->otp_expires_at || Carbon::now()->gt($user->otp_expires_at)) {
-            return response()->json(['message' => 'انتهت صلاحية الرمز.'], 400);
-        }
-
-        // 4. تحديث كلمة المرور (هنا نستخدم Hash)
-        $user->forceFill([
-            'password' => Hash::make($request->password),
-            'otp_code' => null,
-            'otp_expires_at' => null
-        ])->save();
-
-        return response()->json([
-            'message' => 'تم تغيير كلمة المرور بنجاح. قم بتسجيل الدخول الآن.'
-        ], 200);
+    if (!$user) {
+        return response()->json(['message' => 'المستخدم غير موجود.'], 404);
     }
+
+    // --- أدوات التشخيص (Debugging) ---
+    // هذا السطر سيكتب القيم في ملف storage/logs/laravel.log
+    // افتح الملف لتعرف لماذا يرى السيرفر أن الأرقام غير متطابقة
+    Log::info("مقارنة الكود للمستخدم {$user->email}: المخزن [{$user->otp_code}] - المرسل [{$request->otp}]");
+
+    // 1. تنظيف المدخلات (إزالة المسافات)
+    $submittedOtp = trim((string) $request->otp);
+    $storedOtp = trim((string) $user->otp_code);
+
+    // 2. المقارنة
+    if ($submittedOtp !== $storedOtp) {
+        return response()->json([
+            'message' => 'رمز التحقق غير صحيح.',
+            'debug_info' => 'راجع ملف الـ Log للتفاصيل' // يمكنك حذف هذا السطر لاحقاً
+        ], 400);
+    }
+
+    // 3. التحقق من الوقت
+    if (Carbon::now()->gt($user->otp_expires_at)) {
+        return response()->json(['message' => 'انتهت صلاحية الرمز.'], 400);
+    }
+
+    // 4. تغيير كلمة المرور
+    $user->forceFill([
+        'password' => Hash::make($request->password),
+        'otp_code' => null,
+        'otp_expires_at' => null
+    ])->save();
+
+    return response()->json(['message' => 'تم تغيير كلمة المرور بنجاح.']);
+}
 }
