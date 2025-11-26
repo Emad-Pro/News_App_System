@@ -56,14 +56,18 @@ class PasswordResetController extends Controller
     Log::info("مقارنة الكود للمستخدم {$user->email}: المخزن [{$user->otp_code}] - المرسل [{$request->otp}]");
 
     // 1. تنظيف المدخلات (إزالة المسافات)
-    $submittedOtp = trim((string) $request->otp);
+$submittedOtp = trim((string) $request->otp);
     $storedOtp = trim((string) $user->otp_code);
 
-    // 2. المقارنة
+    // 2. المقارنة وكشف القيم في حالة الخطأ
     if ($submittedOtp !== $storedOtp) {
         return response()->json([
             'message' => 'رمز التحقق غير صحيح.',
-            'debug_info' => 'راجع ملف الـ Log للتفاصيل' // يمكنك حذف هذا السطر لاحقاً
+            // 🚨 هذا الجزء سيكشف لك السر - احذفه بعد الحل
+            'server_stored_otp' => $storedOtp, // الكود الموجود في الداتا بيز
+            'you_sent_otp' => $submittedOtp,   // الكود الذي أرسلته أنت
+            'type_stored' => gettype($storedOtp),
+            'type_sent' => gettype($submittedOtp),
         ], 400);
     }
 
