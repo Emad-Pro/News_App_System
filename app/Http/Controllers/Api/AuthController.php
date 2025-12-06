@@ -157,36 +157,46 @@ public function verifyOtp(Request $request)
 }
 public function authWithGoogle(Request $request)
     {
-        // 1. استقبال الـ id_token القادم من الموبايل
         $request->validate([
             'id_token' => 'required|string',
         ]);
 
         try {
-            // 2. التحقق من التوكن عبر Socialite
-            // هذه الخطوة تتصل بجوجل للتأكد أن التوكن سليم ولم يتم التلاعب به
+            // 1. التحقق من التوكن
             $socialiteUser = Socialite::driver('google')->userFromToken($request->id_token);
 
-            // 3. البحث عن المستخدم أو إنشاؤه في قاعدة بياناتك
-            $user = User::updateOrCreate(
-                [
-                    'google_id' => $socialiteUser->getId(), // نبحث عنه بواسطة ID جوجل
-                ],
-                [
-                    'name'              => $socialiteUser->getName(),
-                    'email'             => $socialiteUser->getEmail(),
-                    'google_id'         => $socialiteUser->getId(),
-                    'avatar'            => $socialiteUser->getAvatar(),
-                    'email_verified_at' => now(), // نعتبره موثقاً لأنه قادم من جوجل
-                    'password'          => Hash::make(Str::random(24)), // باسورد عشوائي لأنه لن يستخدمه
-                    'auth_provider'     => 'google', // لتسجيل طريقة الدخول
-                ]
-            );
+            // 2. البحث عن المستخدم
+            // أ: هل يوجد مستخدم بهذا الـ google_id؟
+            $user = User::where('google_id', $socialiteUser->getId())->first();
 
-            // 4. إنشاء توكن خاص بتطبيقك (Sanctum Token)
-            $token = $user->createToken('google-mobile-login')->plainTextToken;
+            if (!$user) {
+                // ب: إذا لم نجد، هل يوجد مستخدم بنفس الإيميل؟
+                $user = User::where('email', $socialiteUser->getEmail())->first();
 
-            // 5. الرد بنجاح
+                if ($user) {
+                    // ✅ حالة ربط الحساب: المستخدم موجود، سنقوم فقط بإضافة google_id له
+                    $user->update([
+                        'google_id'     => $socialiteUser->getId(),
+                        'avatar'        => $socialiteUser->getAvatar(), // تحديث الصورة إن أردت
+                        'auth_provider' => 'google', // تحديث طريقة الدخول الأخيرة
+                    ]);
+                } else {
+                    // ✅ حالة مستخدم جديد كلياً: ننشئ حساب جديد
+                    $user = User::create([
+                        'name'              => $socialiteUser->getName(),
+                        'email'             => $socialiteUser->getEmail(),
+                        'google_id'         => $socialiteUser->getId(),
+                        'avatar'            => $socialiteUser->getAvatar(),
+                        'email_verified_at' => now(),
+                        'password'          => Hash::make(Str::random(24)),
+                        'auth_provider'     => 'google',
+                    ]);
+                }
+            }
+
+            // 3. إصدار التوكن
+            $token = $user->createToken('google-auth-token')->plainTextToken;
+
             return response()->json([
                 'message'      => 'User authenticated successfully',
                 'user'         => $user,
@@ -195,12 +205,10 @@ public function authWithGoogle(Request $request)
             ], 200);
 
         } catch (\Exception $e) {
-            // تسجيل الخطأ في الملفات بدلاً من إيقاف السيرفر
             Log::error('Google Auth Failed: ' . $e->getMessage());
-            
             return response()->json([
                 'message' => 'Authentication failed',
-                'error'   => $e->getMessage() // (اختياري) يمكنك إزالته في الإنتاج
+                'error'   => $e->getMessage()
             ], 401);
         }
     }
