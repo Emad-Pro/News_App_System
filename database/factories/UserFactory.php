@@ -24,17 +24,26 @@ class UserFactory extends Factory
     public function definition(): array
     {
         return [
-            // ❌ الخطأ كان هنا: fake()->name()
-            // ✅ التصحيح: استخدم $this->faker
-            'name' => $this->faker->name(),
-            'email' => $this->faker->unique()->safeEmail(),
+            // ✅ الحل: نستخدم \fake() مع الشرطة المائلة للوصول للدالة العامة
+            'name' => \fake()->name(),
+            'email' => \fake()->unique()->safeEmail(),
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),
-            'role' => 'user', // تأكد من إضافة الحقول الإضافية الخاصة بك إذا لزم الأمر
+            'role' => 'user', 
             'status' => 'active',
+            'phone' => \fake()->phoneNumber(), // إضافة رقم هاتف عشوائي لتجنب الأخطاء
+            'auth_provider' => 'email',       // إضافة طريقة التسجيل الافتراضية
         ];
     }
 
-    // ... باقي الكود
+    /**
+     * Indicate that the model's email address should be unverified.
+     */
+    public function unverified(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'email_verified_at' => null,
+        ]);
+    }
 }
