@@ -2,26 +2,40 @@
 
 namespace Database\Factories;
 
-use App\Models\Category;
-use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
+use App\Models\User;
+use App\Models\Category;
 
 class ArticleFactory extends Factory
 {
     public function definition(): array
     {
-        $title = $this->faker->sentence(6);
+        // 1. توليد اسم صورة عشوائي
+        $imageName = Str::random(10) . '.jpg';
+        $imagePath = 'articles/featured/' . $imageName;
+
+        // 2. تحميل صورة عشوائية حقيقية من Lorem Picsum
+        // نستخدم try/catch لتجنب توقف السكربت لو النت بطيء
+        try {
+            $contents = file_get_contents('https://picsum.photos/640/480');
+            Storage::disk('public')->put($imagePath, $contents);
+        } catch (\Exception $e) {
+            $imagePath = null; // في حالة الفشل نتركها فارغة
+        }
+
         return [
-            'user_id' => User::inRandomOrder()->first()->id, // اختر كاتب عشوائي
-            'category_id' => Category::inRandomOrder()->first()->id, // اختر فئة عشوائية
-            'title' => $title,
-            'slug' => Str::slug($title) . '-' . uniqid(),
-            'content' => $this->faker->paragraphs(10, true), // 10 فقرات نصية
-            'featured_image' => 'https://via.placeholder.com/1280x720.png/0077be?text=Featured',
+            'title' => $this->faker->sentence(),
+            'slug' => $this->faker->slug(),
+            'content' => $this->faker->paragraph(5),
+            'featured_image' => $imagePath, // حفظ المسار
             'status' => 'published',
-            'views_count' => $this->faker->numberBetween(100, 5000),
-            'published_at' => now()->subDays($this->faker->numberBetween(1, 30)),
+            'published_at' => now(),
+            'comments_enabled' => true,
+            'views_count' => rand(10, 5000),
+            'user_id' => User::inRandomOrder()->first()->id ?? User::factory(),
+            'category_id' => Category::inRandomOrder()->first()->id ?? Category::factory(),
         ];
     }
 }
